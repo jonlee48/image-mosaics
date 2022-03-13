@@ -1,4 +1,5 @@
 import pygame
+import numpy as np
 
 def resize_img(img, display_width, display_height):
     ''' Scale the image to fit within display size, maintain aspect ratio '''
@@ -62,6 +63,7 @@ while not quit:
             elif state < 9:
                 # one of the 8 features manually selected
                 pos = pygame.mouse.get_pos()
+                print(pos)
 
                 # draw a dot where clicked
                 color = colors[len(features)%4]
@@ -71,8 +73,28 @@ while not quit:
                 features.append(pos)
 
             elif state == 9:
-                # show mosaic
                 screen.fill((0, 0, 0))
+
+                # create two 4x2 matrix for set of features
+                im1_pts = np.array(features[:4])
+                im2_pts = np.array(features[4:])
+
+                # convert to homogeneous coordinates (x,y,1)
+                im1_pts = np.hstack((im1_pts, np.ones((4,1))))
+                im2_pts = np.hstack((im2_pts, np.ones((4,1))))
+                print(im1_pts)
+                print(im2_pts)
+
+                '''
+                Compute homography: p2 = Hp1, where
+                    H: 3x3 matrix
+                    p1: 4x3 im1_pts 
+                    p2: 4x3 im2_pts
+                '''
+                #TODO: fix homography calculation
+                #H = np.linalg.solve(im1_pts, im2_pts)
+
+                # TODO: show mosaic
                 screen.blit(img1, (0, 0))
 
             state += 1
