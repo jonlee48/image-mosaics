@@ -1,5 +1,6 @@
 import pygame
 import numpy as np
+from mosaics import computeH
 
 def resize_img(img, display_width, display_height):
     ''' Scale the image to fit within display size, maintain aspect ratio '''
@@ -85,17 +86,19 @@ while not quit:
                 print(im1_pts)
                 print(im2_pts)
 
-                '''
-                Compute homography: p2 = Hp1, where
-                    H: 3x3 matrix
-                    p1: 4x3 im1_pts 
-                    p2: 4x3 im2_pts
-                '''
-                #TODO: fix homography calculation
-                #H = np.linalg.solve(im1_pts, im2_pts)
+                # compute the homography from im1 to im2
+                H = computeH(im1_pts, im2_pts)
+                print('H:')
+                print(H)
 
                 # TODO: show mosaic
-                screen.blit(img1, (0, 0))
+                screen.blit(img2, (0, 0))
+                for i, p in enumerate(im1_pts):
+                    pp = H@p
+                    pp = pp/pp[2]
+                    x, y, _ = pp
+                    color = colors[i%4]
+                    pygame.draw.circle(screen, color, (x,y), radius=5)
 
             state += 1
 

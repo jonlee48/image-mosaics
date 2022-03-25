@@ -26,15 +26,16 @@ def computeH(im1_pts, im2_pts):
         P.append(np.array([   0,    0,  0, -1*x, -1*y, -1, x*yp, y*yp, yp]))
 
     P = np.array(P)
-    print(P)
+    #print(P)
 
+    # use single value decomposition to solve for H
     u, s, v = np.linalg.svd(P)
 
+    # H is last column of v
     H = v[8].reshape((3,3))
     # normalize H
     H = (1 / H.item(8)) * H
 
-    print(H)
     return H
 
 if __name__ == '__main__':
@@ -42,7 +43,11 @@ if __name__ == '__main__':
     im2_pts = [(0, 0, 1), (2, 0, 1), (0, 2, 1), (2, 2, 1)]
 
     H = computeH(im1_pts, im2_pts)
+    print('H: ')
+    print(H)
 
+    print('H@im1_pts:')
+    # H@im1_pts, should correspond to im2_pts
     for p in im1_pts:
         p = np.array(p)
         print(H@p)
