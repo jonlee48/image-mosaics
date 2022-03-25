@@ -190,11 +190,26 @@ while not quit:
 
                 mosaic += im2_padded
 
+
+                ''' add image 1 on top '''
+                '''
+                im1 = cv2.imread(im1_newpath)
+
+                for w in range(im1.shape[1]):
+                    for h in range(im1.shape[0]):
+                        p = (w,h,1)
+                        pp = H @ p
+                        # normalize by 3rd coordinate
+                        pp = pp / pp[2]
+                        wp, hp, _ = pp
+                        wp = int(wp-origin_w)
+                        hp = int(hp-origin_h)
+                        mosaic[hp,wp,:] = im1[h,w,:]
+                '''
+
+                ''' save the result '''
                 mosaic_path = 'imgs/mosaic.png'
                 cv2.imwrite(mosaic_path,mosaic)
-
-
-                # Load im1 as np array
                 pygame_mosaic = pygame.image.load(mosaic_path)
 
                 ''' display the result '''
@@ -204,14 +219,14 @@ while not quit:
 
                 # Show the mapped 4 points from im1
                 for i, p in enumerate(im1_pts):
-                    pp = H@p
+                    pp = H @ p
                     # normalize by 3rd coordinate
-                    pp = pp/pp[2]
+                    pp = pp / pp[2]
                     w, h, _ = pp
                     w -= origin_w
                     h -= origin_h
-                    color = colors[i%4]
-                    pygame.draw.circle(screen, color, (w,h), radius=5)
+                    color = colors[i % 4]
+                    pygame.draw.circle(screen, color, (w, h), radius=5)
 
             state += 1
 
