@@ -212,9 +212,15 @@ while not quit:
                 pygame_mosaic = pygame.image.load(mosaic_path)
 
                 ''' display the result '''
-                screen = pygame.display.set_mode((mosaic.shape[1], mosaic.shape[0]))
+                # resize result to fit to screen
+                pygame_mosaic = resize_img(pygame_mosaic, display_width, display_height)
+
+                screen = pygame.display.set_mode((pygame_mosaic.get_width(), pygame_mosaic.get_height()))
                 screen.fill((0, 0, 0))
                 screen.blit(pygame_mosaic, (0, 0))
+
+                scale = 1
+                scale = pygame_mosaic.get_width()/mosaic.shape[1]
 
                 # Show the mapped 4 points from im1
                 for i, p in enumerate(im1_pts):
@@ -222,10 +228,10 @@ while not quit:
                     # normalize by 3rd coordinate
                     pp = pp / pp[2]
                     w, h, _ = pp
-                    w += origin_w
-                    h += origin_h
+                    w = round(scale * (w + origin_w))
+                    h = round(scale * (h + origin_h))
                     color = colors[i % 4]
-                    pygame.draw.circle(screen, color, (int(w), int(h)), radius=5)
+                    pygame.draw.circle(screen, color, (w, h), radius=5)
 
             state += 1
 
