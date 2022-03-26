@@ -192,9 +192,7 @@ while not quit:
 
 
                 ''' add image 1 on top '''
-                '''
                 im1 = cv2.imread(im1_newpath)
-
                 for w in range(im1.shape[1]):
                     for h in range(im1.shape[0]):
                         p = (w,h,1)
@@ -202,10 +200,11 @@ while not quit:
                         # normalize by 3rd coordinate
                         pp = pp / pp[2]
                         wp, hp, _ = pp
-                        wp = int(wp-origin_w)
-                        hp = int(hp-origin_h)
-                        mosaic[hp,wp,:] = im1[h,w,:]
-                '''
+                        wp = round(wp+origin_w) # use round instead of int
+                        hp = round(hp+origin_h)
+                        # set the patch of n pixels around mapped coordinates to the pixel color (to account for rounding error)
+                        n = 3
+                        mosaic[hp:hp+n+1,wp:wp+n+1,:] = im1[h,w,:]
 
                 ''' save the result '''
                 mosaic_path = 'imgs/mosaic.png'
@@ -223,10 +222,10 @@ while not quit:
                     # normalize by 3rd coordinate
                     pp = pp / pp[2]
                     w, h, _ = pp
-                    w -= origin_w
-                    h -= origin_h
+                    w += origin_w
+                    h += origin_h
                     color = colors[i % 4]
-                    pygame.draw.circle(screen, color, (w, h), radius=5)
+                    pygame.draw.circle(screen, color, (int(w), int(h)), radius=5)
 
             state += 1
 
