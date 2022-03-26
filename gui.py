@@ -33,9 +33,12 @@ def resize_to_fit(im_width, im_height, display_width, display_height):
     return resize
 
 
-# input images to align
+# TODO: input images to align
 im1_path = 'imgs/lodge1.jpg'
 im2_path = 'imgs/lodge2.jpg'
+
+#im1_path = 'imgs/license2.jpg'
+#im2_path = 'imgs/license1.jpg'
 
 # start the pygame interface
 pygame.init()
@@ -48,7 +51,7 @@ im2_raw = cv2.imread(im2_path)
 
 # get screen dimensions
 info = pygame.display.Info()
-display_width = info.current_w
+display_width = int(info.current_w / 2)
 display_height = info.current_h - 100
 
 im1_new_size = resize_to_fit(im1_raw.shape[1], im1_raw.shape[0], display_width, display_height)
@@ -203,7 +206,8 @@ while not quit:
                         wp = round(wp+origin_w) # use round instead of int
                         hp = round(hp+origin_h)
                         # set the patch of n pixels around mapped coordinates to the pixel color (to account for rounding error)
-                        n = 3
+                        # TODO: increase this number if patches in the image appear blank
+                        n = 1
                         mosaic[hp:hp+n+1,wp:wp+n+1,:] = im1[h,w,:]
 
                 ''' save the result '''
