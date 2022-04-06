@@ -1,0 +1,32 @@
+{% assign filenames = include.names | split: "," %}
+
+{% if include.alts %}
+{% assign alts = include.alts | split: "," %}
+{% else %}
+{% assign alts = include.names | split: "," %}
+{% endif %}
+
+{% if include.height %}
+{% assign height = include.height %}
+{% else %}
+{% assign height = 200 %}
+{% endif %}
+
+
+{% if include.captions %}
+{% assign captions = include.captions | split: "," %}
+{% endif %}
+
+<div class ="gallery">
+{% for name in filenames %}
+<div class="box">
+{% capture imagePath %}{{ page.date | date: "%Y-%m-%d" }}-{{ page.title | slugify }}/{{ name }}{% endcapture %}
+<img src="/assets/posts/{{ imagePath }}" alt="{{ alts[forloop.index0 ] }}" height="{{ height }}" class="gallery-img" />
+{%if captions %}<figcaption>{{ captions[forloop.index0] }}</figcaption>{% endif %}
+</div>
+{% endfor %}
+</div>
+
+{% assign alts = nil %}
+{% assign height = nil %}
+{% assign captions = nil %}
