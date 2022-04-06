@@ -1,5 +1,6 @@
 import pygame
 import cv2
+import util
 import numpy as np
 from mosaics import computeH
 
@@ -34,8 +35,8 @@ def resize_to_fit(im_width, im_height, display_width, display_height):
 
 
 # TODO: input images to align
-im1_path = 'imgs/lodge1.jpg'
-im2_path = 'imgs/lodge2.jpg'
+im1_path = 'imgs/board1.jpg'
+im2_path = 'imgs/board2.jpg'
 
 #im1_path = 'imgs/license2.jpg'
 #im2_path = 'imgs/license1.jpg'
@@ -84,6 +85,7 @@ screen = pygame.display.set_mode((im1.get_width(), im1.get_height())) # window d
 # Show the image
 screen.blit(im1, (0,0))
 
+develop = True
 
 quit = False
 while not quit:
@@ -102,7 +104,7 @@ while not quit:
                 screen.blit(im2, (0, 0))
 
 
-            elif state < 9:
+            elif state < 9 and not develop:
                 # one of the 8 features manually selected
                 pos = pygame.mouse.get_pos()
                 print(pos)
@@ -114,7 +116,44 @@ while not quit:
                 # save the position
                 features.append(pos)
 
-            elif state == 9:
+            elif state == 9 or develop:
+                if develop:
+                    # features = [(3, 257), (131, 263), (2, 358),
+                    #             (135, 360),
+                    #             (251, 277),
+                    #             (370, 275),
+                    #             (248, 372),
+                    #             (371, 374)]
+                    features = [
+                        (687, 327),
+                        (865, 331),
+                        (695, 392),
+                        (864, 394),
+                        (111, 407),
+                        (320, 401),
+                        (115, 471),
+                        (318, 462)]
+                    # features = [
+                    #     (466, 195),
+                    #     (563, 195),
+                    #     (461, 354),
+                    #     (557, 353),
+                    #     (19, 200),
+                    #     (112, 202),
+                    #     (24, 348),
+                    #     (116, 352)
+                    # ]
+                    # features = [
+                    #     (395, 207),
+                    #     (682, 185),
+                    #     (386, 787),
+                    #     (650, 827),
+                    #     (57, 172),
+                    #     (345, 189),
+                    #     (65, 803),
+                    #     (332, 792)
+                    # ]
+
 
                 # create two 4x2 matrix for set of features
                 im1_pts = np.array(features[:4])
@@ -183,7 +222,7 @@ while not quit:
                 im2_padded = np.pad(im2,
                                     pad_width=pad_width,
                                     mode='constant',
-                                    constant_values=0)
+                                    constant_values=1)
                 # TODO: the width and height may still differ by 1 (due to rounding)
                 print('padded shape')
                 print(im2_padded.shape)
@@ -194,7 +233,9 @@ while not quit:
                 mosaic += im2_padded
 
 
+                overlap = []
                 ''' add image 1 on top '''
+                wa = 0.0
                 im1 = cv2.imread(im1_newpath)
                 for w in range(im1.shape[1]):
                     for h in range(im1.shape[0]):
@@ -207,8 +248,39 @@ while not quit:
                         hp = round(hp+origin_h)
                         # set the patch of n pixels around mapped coordinates to the pixel color (to account for rounding error)
                         # TODO: increase this number if patches in the image appear blank
+
+                        # if not np.array_equal(mosaic[hp, wp, :], [0,0,0]):
+                        #     mosaic[hp:hp+n+1,wp:wp+n+1,:] = (im1[h,w,:] * (1 - wa)) + (wa * (mosaic[hp:hp+n+1,wp:wp+n+1,:]))
+                        #     wa += 0.001
+                        # print(mosaic[hp, wp, :])
                         n = 1
-                        mosaic[hp:hp+n+1,wp:wp+n+1,:] = im1[h,w,:]
+                        if util.isRegionBlack(mosaic[hp: hp + n + 1, wp:wp + n + 1, :]):
+                            overlap.append([h, w])
+                        else:
+                            n = 1
+                            mosaic[hp:hp+n+1,wp:wp+n+1,:] = im1[h, w, :]
+
+                first = overlap[0]
+                last = overlap[-1]
+                print(first, last)
+                for h in range(first[0], last[0]):
+                    wa = 0.0
+                    for w in range(first[1], last[1]):
+                        p = (w,h,1)
+                        pp = H @ p
+                        # normalize by 3rd coordinate
+                        pp = pp / pp[2]
+                        wp, hp, _ = pp
+                        wp = round(wp+origin_w) # use round instead of int
+                        hp = round(hp+origin_h)
+                        n = 1
+                        mosaic[hp:hp + n + 1, wp:wp + n + 1, :] = (im1[h, w, :] * (1 - wa)) + (mosaic[hp:hp + n + 1, wp:wp + n + 1, :] * wa)
+                        wa += 1/(float)(last[1] - first[1])
+
+
+
+
+
 
                 ''' save the result '''
                 mosaic_path = 'imgs/mosaic.png'
