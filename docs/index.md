@@ -28,7 +28,8 @@ Image mosaics are created by compositing multiple images together by computing t
   - [5 - Bells and whistles](#5---bells-and-whistles)
   - [5.1 - Implemented perspective warping using our own math.](#51---implemented-perspective-warping-using-our-own-math)
   - [5.2 - Image blending](#52---image-blending)
-  - [5.3 - Video mosaics](#53---video-mosaics)
+  - [5.3 - Augmented reality](#53---augmented-reality)
+  - [5.3 Augmented Reality](#53-augmented-reality)
 
 ## 1 - Shoot and choose good pictures
 {% include image names="imgs/lodge1.jpg,imgs/lodge2.jpg" caption="Photos of an empty ski lodge captured over Spring break." height="350" %}
@@ -45,5 +46,28 @@ Image mosaics are created by compositing multiple images together by computing t
 
 ## 5.2 - Image blending
 
-## 5.3 - Video mosaics
+## 5.3 - Augmented reality
 
+
+
+## 5.3 Augmented Reality
+
+The goal for this feature was to simulate the idea of having a painting on a wall. 
+
+{% include image names="videos/original-vid.gif" height="350" %}
+
+We started with the video above, a video of a wall. On the wall was a sheet of paper that had a checkerboard printed on it. Using an OpenCV function, we were able to automatically find the 4 corners of the checkerboard so that they could be used in computing the homography between an individual frame of the video and an image of a paitning. We used Van Gogh's iconic Starry Night as the painting.
+
+A high-level psuedocode algorithm for this feature is as follows:
+```
+for each frame in the video:
+    1. use OpenCV to get the 4 corners of the checkerboard on the wall
+    2. compute the homography between the frame and starry night 
+    3. using the homography matrix, transform Starry Night to cover checkerboard
+
+compress frames back into video
+```
+
+This produced the following result:
+
+{% include image names="videos/out-movie.gif" height="350" %}
