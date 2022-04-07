@@ -25,6 +25,26 @@ if (this is code):
     return syntax_highlighting
 ```
 
+We chose to compute the homography ourselves for this project rather than use any Python libraries. The general idea is to solve the following equation:
+
+$$
+Ah = 0
+$$
+
+Let us first define a point correspondence. A point correspondence is a pair of coordinates (x,y) and (x', y') that represent the matching two locations in image one and two.
+
+$h$ is the homograpgy and is a 1x9 matrix that will later be shaped into a 3x3 matrix, and $A$ is a 2n x 9 matrix where n is the number of point correspondences between the two images.
+
+For each point correspondence between a pair of images, the following two lines are appended to matrix $A$:
+
+$$
+(-x, -y, -1,    0,    0,  0, x*x', y*x', x')
+$$
+$$
+(   0,    0,  0, -x, -y, -1, x*y', y*y', y')
+$$
+
+We then use single value decompositon to solve $Ah=0$ for $h$.
 
 ## Results
 
