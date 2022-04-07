@@ -32,13 +32,22 @@ Image mosaics are created by compositing multiple images together by computing t
   - [5.3 Augmented Reality](#53-augmented-reality)
 
 ## 1 - Shoot and choose good pictures
-{% include image names="imgs/lodge1.jpg,imgs/lodge2.jpg" caption="Photos of an empty ski lodge captured over Spring break." height="350" %}
+{% include image names="imgs/lodge2.jpg,imgs/lodge1.jpg" caption="Photos of an empty ski lodge captured over Spring break." height="350" %}
+
+{% include image names="imgs/bk-bridge-1.jpg,imgs/bk-bridge-2.jpg,imgs/bk-bridge-3.jpg," caption="Photos of the Brooklyn Bridge." height="250" %}
+
+{% include image names="imgs/bk-and-manhattan-bridge-1.jpg,imgs/bk-and-manhattan-bridge-2.jpg,imgs/bk-and-manhattan-bridge-3.jpg,imgs/bk-and-manhattan-bridge-4.jpg" caption="Sequence of panoramic photos of NYC." height="110" %}
+
+{% include image names="imgs/license1.jpg,imgs/license2.jpg" caption="Photos to test rectification of the numbers on a license plate." height="130" %}
 
 ## 2 - Recover homographies
 
 ## 3 - Warp the images
 
 ## 4 - Blend images into a mosaic
+{% include image names="imgs/lodge12.png" caption="lodge" height="300" %}
+{% include image names="imgs/bk-and-manhattan-bridge-123.png" caption="NYC" height="300" %}
+{% include image names="imgs/bk-bridge-123.png" caption="Brooklyn Bridge" height="300" %}
 
 ## 5 - Bells and whistles
 

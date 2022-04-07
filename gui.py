@@ -207,7 +207,7 @@ while not quit:
                         hp = round(hp+origin_h)
                         # set the patch of n pixels around mapped coordinates to the pixel color (to account for rounding error)
                         # TODO: increase this number if patches in the image appear blank
-                        n = 1
+                        n = 2
                         mosaic[hp:hp+n+1,wp:wp+n+1,:] = im1[h,w,:]
 
                 ''' save the result '''
