@@ -1,4 +1,6 @@
 *_resized.*
 __pycache__/
 .idea/
-videos/
+videos/frames/
+videos/out-frames/
+living-room.mp4
