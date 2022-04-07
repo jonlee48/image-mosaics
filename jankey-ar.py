@@ -1,4 +1,5 @@
 import numpy as np
+import os
 import cv2
 import pygame
 from mosaics import computeH
@@ -49,10 +50,26 @@ def get_checkerboard_corners(img_path):
 
     return ret
 
-if __name__ == '__main__':
+
+def split_video(video_path):
+    vidcap = cv2.VideoCapture(video_path)
+    success,image = vidcap.read()
+    count = 0
+
+    print("HERE")
+    print(success)
+    print(image)
+    while success:
+        cv2.imwrite("frame%d.jpg" % count, image)     # save frame as JPEG file      
+        success,image = vidcap.read()
+        print('Read a new frame: ', success)
+        count += 1
+
+
+def do_ar(img_path):
     # TODO: input images to align
-    im1_path = 'imgs/cat.jpg'
-    im2_path = 'imgs/bed.jpg'
+    im1_path = 'imgs/starry-night.jpg'
+    im2_path = img_path 
 
     # start the pygame interface
     pygame.init()
@@ -89,9 +106,9 @@ if __name__ == '__main__':
     im2 = pygame.image.load(im2_newpath)
 
     # start display with first image
-    screen = pygame.display.set_mode((im1.get_width(), im1.get_height())) # window dimensions same as image
+    # screen = pygame.display.set_mode((im1.get_width(), im1.get_height())) # window dimensions same as image
     # Show the image
-    screen.blit(im1, (0,0))
+    # screen.blit(im1, (0,0))
 
     # create two 4x2 matrix for set of features
     im1_pts = []
@@ -105,13 +122,13 @@ if __name__ == '__main__':
     # convert to homogeneous coordinates (x,y,1)
     im1_pts = np.hstack((im1_pts, np.ones((4,1))))
     im2_pts = np.hstack((im2_pts, np.ones((4,1))))
-    print(im1_pts)
-    print(im2_pts)
+    # print(im1_pts)
+    # print(im2_pts)
 
     # compute the homography from im1 to im2
     H = computeH(im1_pts, im2_pts)
-    print('H:')
-    print(H)
+    # print('H:')
+    # print(H)
 
     # TODO: show mosaic
     ''' Compute size of np array needed to fit mosaic '''
@@ -147,31 +164,31 @@ if __name__ == '__main__':
     width = int(w_up-w_low)
     height = int(h_up-h_low)
     mosaic = np.zeros((height,width,3))
-    print(mosaic.shape)
-    print(im2.get_width())
-    print(im2.get_height())
+    # print(mosaic.shape)
+    # print(im2.get_width())
+    # print(im2.get_height())
 
 
     ''' add image 2 to mosaic '''
     # image 2 needs to be same dimensions as mosaic
     im2 = cv2.imread(im2_newpath)
-    print(im2.shape)
+    # print(im2.shape)
 
     im2_width = im2.shape[1]+origin_w
     im2_height = im2.shape[0]+origin_h
     pad_width = ((int(origin_h), int(mosaic.shape[0] - im2_height)), (int(origin_w), int(mosaic.shape[1] - im2_width)),(0,0))
-    print('pad_width')
-    print(pad_width)
+    # print('pad_width')
+    # print(pad_width)
     im2_padded = np.pad(im2,
                         pad_width=pad_width,
                         mode='constant',
                         constant_values=0)
     # TODO: the width and height may still differ by 1 (due to rounding)
-    print('padded shape')
-    print(im2_padded.shape)
+    # print('padded shape')
+    # print(im2_padded.shape)
 
-    print('mosaic shape')
-    print(mosaic.shape)
+    # print('mosaic shape')
+    # print(mosaic.shape)
 
     mosaic += im2_padded
 
@@ -193,32 +210,29 @@ if __name__ == '__main__':
             mosaic[hp:hp+n+1,wp:wp+n+1,:] = im1[h,w,:]
 
     ''' save the result '''
-    mosaic_path = 'imgs/mosaic.png'
+    mosaic_path = 'videos/out-frames/out-'
+    mosaic_path += os.path.basename(img_path).split(".")[0] + str(".png")
+    print(mosaic_path)
+
     cv2.imwrite(mosaic_path,mosaic)
-    pygame_mosaic = pygame.image.load(mosaic_path)
 
-    ''' display the result '''
-    # resize result to fit to screen
-    pygame_mosaic = resize_img(pygame_mosaic, display_width, display_height)
 
-    screen = pygame.display.set_mode((pygame_mosaic.get_width(), pygame_mosaic.get_height()))
-    screen.fill((0, 0, 0))
-    screen.blit(pygame_mosaic, (0, 0))
+if __name__ == "__main__":
+    # split_video("videos/living-room.mp4")
+     
+    path = "videos/frames/frame"
+    
+    i = 0
+    # while True:
+    for i in range(0, 30):
+        img = path + str(i) + ".jpg"
+        if not os.path.exists(img):
+            break
 
-    scale = 1
-    scale = pygame_mosaic.get_width()/mosaic.shape[1]
+        if img[-3:] == "jpg":
+            print(img)
+            do_ar(img)
 
-    # Show the mapped 4 points from im1
-    for i, p in enumerate(im1_pts):
-        pp = H @ p
-        # normalize by 3rd coordinate
-        pp = pp / pp[2]
-        w, h, _ = pp
-        w = round(scale * (w + origin_w))
-        h = round(scale * (h + origin_h))
-        color = colors[i % 4]
-        pygame.draw.circle(screen, color, (w, h), radius=5)
-
-        # update the display
-        pygame.display.flip()
-        clock.tick(30)
+        #i += 1
+        
+    os.system("convert -delay 5 -loop 0 videos/out-frames/*.png videos/out-movie.gif")
