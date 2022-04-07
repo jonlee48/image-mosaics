@@ -43,10 +43,20 @@ def get_checkerboard_corners(img_path):
     flag_found, corners = cv2.findChessboardCorners(img_gray, CHECKER)
 
     ret = []
+
+    shift = 40
+
+    ret.append( (corners[0][0][0]-shift, corners[0][0][1]-shift) )
+    ret.append( (corners[5][0][0]+shift, corners[5][0][1]-shift) )
+    ret.append( (corners[18][0][0]-shift, corners[18][0][1]+shift) )
+    ret.append( (corners[len(corners)-1][0][0]+shift, corners[len(corners)-1][0][1]+shift) )
+
+    '''
     ret.append(corners[0][0])
     ret.append(corners[5][0])
     ret.append(corners[18][0])
     ret.append(corners[len(corners)-1][0])
+    '''
 
     return ret
 
@@ -224,7 +234,7 @@ if __name__ == "__main__":
     
     i = 0
     # while True:
-    for i in range(0, 30):
+    for i in range(30, 100):
         img = path + str(i) + ".jpg"
         if not os.path.exists(img):
             break
