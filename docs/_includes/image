@@ -20,11 +20,13 @@
 <div class ="gallery">
 {% for name in filenames %}
 <div class="box">
-{% capture imagePath %}{{ page.date | date: "%Y-%m-%d" }}-{{ page.title | slugify }}/{{ name }}{% endcapture %}
-<img src="/assets/posts/{{ imagePath }}" alt="{{ alts[forloop.index0 ] }}" height="{{ height }}" class="gallery-img" />
+<img src="{{ name }}" alt="{{ alts[forloop.index0 ] }}" height="{{ height }}" class="gallery-img" />
 {%if captions %}<figcaption>{{ captions[forloop.index0] }}</figcaption>{% endif %}
 </div>
 {% endfor %}
+</div>
+<div style="text-align:center;">
+{%if include.caption %}<figcaption>{{ include.caption }}</figcaption>{% endif %}
 </div>
 
 {% assign alts = nil %}

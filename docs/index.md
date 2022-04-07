@@ -11,19 +11,30 @@ mathjax: true
 - Graham Schock
 - Jack Umina
 
-## Background
+## Overview
+Image mosaics are created by compositing multiple images together by computing the perspective transformation between images. We captured our own photographs and implemented a GUI so that users could select features to map between images. We also implemented three bells and whistles.
 
-## Main Algorithm
-Some inline $math$.
-$$
-C_D=\frac{2D}{\rho V ^2 A}
-$$
 
-### Recover Homographies
-```python
-if (this is code):
-    return syntax_highlighting
-```
+
+### Table of Contents
+- [Project 3: Image Mosaics](#project-3-image-mosaics)
+  - [Team Members](#team-members)
+  - [Overview](#overview)
+    - [Table of Contents](#table-of-contents)
+  - [1 - Shoot and choose good pictures](#1---shoot-and-choose-good-pictures)
+  - [2 - Recover homographies](#2---recover-homographies)
+  - [3 - Warp the images](#3---warp-the-images)
+  - [4 - Blend images into a mosaic](#4---blend-images-into-a-mosaic)
+  - [5 - Bells and whistles](#5---bells-and-whistles)
+  - [5.1 - Implemented perspective warping using our own math.](#51---implemented-perspective-warping-using-our-own-math)
+  - [5.2 - Image blending](#52---image-blending)
+  - [5.3 - Augmented reality](#53---augmented-reality)
+  - [5.3 Augmented Reality](#53-augmented-reality)
+
+## 1 - Shoot and choose good pictures
+{% include image names="imgs/lodge1.jpg,imgs/lodge2.jpg" caption="Photos of an empty ski lodge captured over Spring break." height="350" %}
+
+## 2 - Recover homographies
 
 We chose to compute the homography ourselves for this project rather than use any Python libraries. The general idea is to solve the following equation:
 
@@ -46,14 +57,22 @@ $$
 
 We then use single value decompositon to solve $Ah=0$ for $h$.
 
-## Results
+## 3 - Warp the images
+
+## 4 - Blend images into a mosaic
+
+## 5 - Bells and whistles
+
+## 5.1 - Implemented perspective warping using our own math.
+
+## 5.2 - Image blending
 
 
-## Augmented Reality
+## 5.3 Augmented Reality
 
 The goal for this feature was to simulate the idea of having a painting on a wall. 
 
-![](/videos/original-vid.gif)
+{% include image names="videos/original-vid.gif" height="350" %}
 
 We started with the video above, a video of a wall. On the wall was a sheet of paper that had a checkerboard printed on it. Using an OpenCV function, we were able to automatically find the 4 corners of the checkerboard so that they could be used in computing the homography between an individual frame of the video and an image of a paitning. We used Van Gogh's iconic Starry Night as the painting.
 
@@ -69,4 +88,4 @@ compress frames back into video
 
 This produced the following result:
 
-![](/videos/out-movie.gif)
+{% include image names="videos/out-movie.gif" height="350" %}
