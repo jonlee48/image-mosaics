@@ -33,7 +33,7 @@ if (this is code):
 
 The goal for this feature was to simulate the idea of having a painting on a wall. 
 
-![](videos/original-vid.gif)
+![](/videos/original-vid.gif)
 
 We started with the video above, a video of a wall. On the wall was a sheet of paper that had a checkerboard printed on it. Using an OpenCV function, we were able to automatically find the 4 corners of the checkerboard so that they could be used in computing the homography between an individual frame of the video and an image of a paitning. We used Van Gogh's iconic Starry Night as the painting.
 
@@ -49,4 +49,4 @@ compress frames back into video
 
 This produced the following result:
 
-![](videos/out-movie.gif)
+![](/videos/out-movie.gif)
