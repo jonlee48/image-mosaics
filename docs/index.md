@@ -20,12 +20,12 @@ The code is available at [github.com/jonlee48/image-mosaics](https://github.com/
 ### Sections
 1. [Shoot and choose good pictures](#1---shoot-and-choose-good-pictures)
 2. [Recover homographies](#2---recover-homographies)
+   1. [Bell and whistle - implemented perspective warping using our own math](#21---bell-and-whistle---implemented-perspective-warping-using-our-own-math)
 3. [Warp the images](#3---warp-the-images)
 4. [Blend images into a mosaic](#4---blend-images-into-a-mosaic)
-5. [Bells and whistles](#5---bells-and-whistles)
-   1. [Implemented perspective warping using our own math.](#51---implemented-perspective-warping-using-our-own-math)
-   2. [Image blending](#52---image-blending)
-   3. [Augmented reality](#53---augmented-reality)
+5. [Additional bells and whistles](#5---additional-bells-and-whistles)
+   1. [Image blending](#52---image-blending)
+   2. [Augmented reality](#53---augmented-reality)
 
 ## 1 - Shoot and choose good pictures
 We selected a photo of a car on the highway and a stock image of a license plate. We could do some interesting things, 
@@ -33,7 +33,7 @@ such as warping the photo of the car to make the license plate easier to read, o
 
 {% include image names="imgs/license1.jpg,imgs/license2.jpg" caption="Photos to test rectification of the numbers on a license plate." height="130" %}
 
-We chose the following photos because they were visually appealing - showing a landscape scene that would make for a nice panorama. 
+We chose the following photos because they were visually appealing - landscape scenes with lots of points of interest. 
 Additionally, each set of images had unique features which made it easier to find 4 corresponding points in the photos.
 For example, the corners of the windows of the ski lodge would make good points to solve for a homography. 
 
@@ -41,11 +41,24 @@ For example, the corners of the windows of the ski lodge would make good points 
 
 {% include image names="imgs/bk-bridge-1.jpg,imgs/bk-bridge-2.jpg,imgs/bk-bridge-3.jpg," caption="Photos of the Brooklyn Bridge." height="250" %}
 
-{% include image names="imgs/bk-and-manhattan-bridge-1.jpg,imgs/bk-and-manhattan-bridge-2.jpg,imgs/bk-and-manhattan-bridge-3.jpg,imgs/bk-and-manhattan-bridge-4.jpg" caption="Sequence of panoramic photos of NYC." height="110" %}
+{% include image names="imgs/bk-and-manhattan-bridge-1.jpg,imgs/bk-and-manhattan-bridge-2.jpg,imgs/bk-and-manhattan-bridge-3.jpg" caption="Sequence of panoramic photos of NYC." height="150" %}
 
 
 ## 2 - Recover homographies
 
+The points used to calculate the homography are selected by clicking points 4 points on each image in a GUI. 
+As the user clicks, a colored dot is drawn to show where the user clicked.
+Then the homography to map one set of points to the other is computed and the result is displayed.
+
+{% include image names="videos/selecting_points.gif,imgs/license2.jpg" captions="User adding points on the GUI,Points from the first image are mapped to this target." height="190" %}
+
+The challenge of hand selecting points on the GUI ends up being the image dimensions. 
+The coordinates selected on the screen don't necessarily correspond to the same pixel coordinates if the image is not displayed 1:1.
+To avoid this issue of scaling, we simply resize the image to a manageable size so that it will always fit on a 1080p screen.
+The downside to this approach is we end up with a lower resolution result, but it makes the transformation calculation faster.
+
+
+### 2.1 - Bell and Whistle - implemented perspective warping using our own math
 We chose to compute the homography ourselves for this project rather than use any Python libraries. The general idea is to solve the following equation:
 
 $$
@@ -110,20 +123,46 @@ def computeH(im1_pts, im2_pts):
 ```
 
 ## 3 - Warp the images
+The image warping is computed by multiplying the homography $H$ against every pixel coordinate in the image to find its transformed location.
+```python
+for w in range(im1.shape[1]):
+    for h in range(im1.shape[0]):
+        p = (w,h,1)
+        pp = H @ p
+        # normalize by 3rd coordinate
+        pp = pp / pp[2]
+        wp, hp, _ = pp
+        wp = round(wp+origin_w) # use round() instead of int()
+        hp = round(hp+origin_h)
+        # set the patch of n pixels around mapped coordinates to the pixel color (to account for rounding error)
+        n = 1 # increase this number if patches in the image appear blank
+        mosaic[hp:hp+n+1,wp:wp+n+1,:] = im1[h,w,:]
+```
+
+{% include image names="imgs/warped_car.png" captions="Result of transformation" height="350" %}
+In the result we can see that the numbers from the license plate are warped to appear as if the perspective was straight on.
+This demonstrates that our approach is working. One practical use case for text rectification is optical character recognition (OCR) where the text is first 
+aligned to make it easier to read.
+
+One issue we had to overcome is missing pixels when the transformed image is stretched. Stretching an image means
+we need to fill in space in areas where no pixels have been mapped onto. 
+We account for this by filling in a patch of pixels to cover up empty pixels. This approach works very well, however the 
+size of the image patch needs to be adjusted depending on how severe the warping is.
 
 ## 4 - Blend images into a mosaic
+These are the mosaics of the images from above. These results are without any blending algorithms applied.
+The warped image simply overwrites the pixel values from the other image.
+{% include image names="imgs/license1.jpg,imgs/license_mapped.png" caption="The car's license plate is replaced with another one." height="300" %}
 {% include image names="imgs/lodge12.png" caption="lodge" height="300" %}
 {% include image names="imgs/bk-and-manhattan-bridge-123.png" caption="NYC" height="300" %}
 {% include image names="imgs/bk-bridge-123.png" caption="Brooklyn Bridge" height="300" %}
 
-## 5 - Bells and whistles
+## 5 - Additional bells and whistles
 
-### 5.1 - Implemented perspective warping using our own math.
-
-### 5.2 - Image blending
+### 5.1 - Image blending
 
 
-### 5.3 Augmented Reality
+### 5.2 - Augmented Reality
 
 The goal for this feature was to simulate the idea of having a painting on a wall. 
 

@@ -37,8 +37,8 @@ def resize_to_fit(im_width, im_height, display_width, display_height):
 im1_path = 'imgs/lodge1.jpg'
 im2_path = 'imgs/lodge2.jpg'
 
-#im1_path = 'imgs/license2.jpg'
-#im2_path = 'imgs/license1.jpg'
+im2_path = 'imgs/license1.jpg'
+im1_path = 'imgs/license2.jpg'
 
 # start the pygame interface
 pygame.init()
@@ -207,7 +207,7 @@ while not quit:
                         hp = round(hp+origin_h)
                         # set the patch of n pixels around mapped coordinates to the pixel color (to account for rounding error)
                         # TODO: increase this number if patches in the image appear blank
-                        n = 2
+                        n = 0
                         mosaic[hp:hp+n+1,wp:wp+n+1,:] = im1[h,w,:]
 
                 ''' save the result '''
@@ -235,7 +235,7 @@ while not quit:
                     w = round(scale * (w + origin_w))
                     h = round(scale * (h + origin_h))
                     color = colors[i % 4]
-                    pygame.draw.circle(screen, color, (w, h), radius=5)
+                    pygame.draw.circle(screen, color, (w, h), radius=3)
 
             state += 1
 
