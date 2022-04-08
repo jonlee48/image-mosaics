@@ -161,6 +161,63 @@ The warped image simply overwrites the pixel values from the other image.
 
 ### 5.1 - Image blending
 
+In order to demonstrate the blending process the best we wanted to have images that had similar features but differnet levels of contrast. 
+
+We decided to use a whiteboard with writing as the light can reflect off of interesting angles to create differnet contrasts.
+
+![2 pictures of the same board with differnt levels of contrast](imgs/boardside.png)
+
+Our naive approach to blend these two images is just to write the first image over the second one. 
+
+![Mosaic with writing the first picture over the first one](imgs/noblur.png)
+
+In this photo, we clearly see the lines where the two images are. 
+
+Next, we tried to identify the overlap of the two images for example: 
+
+![Mosaic with the overlap idenfied](imgs/overlap.png)
+
+In pseudocode this would be: 
+
+``` sh
+while writing second image pixel: 
+    if (pixels are already present)
+        overlap[pixel] = true
+```
+
+Once we know where the overlap is we tried to just take 50% from each image in this region, again in pseudocode: 
+
+``` sh
+while writing second image pixel: 
+    if (pixels are already present)
+        newpixel = (0.5 * curpixel) + (0.5 * oldpixel)
+```
+
+This would give us the result: 
+
+![Mosaic with 50% in overlap](imgs/halfblur.png)
+
+In this mosaic, we can still see an edge, but there is more of a gradual difference between the two images.
+
+Finally, as we move across the overlap region the values that we are trying to approximate change. 
+
+![2 regions of the overlap labeled](imgs/overlap_label.png)
+
+For example, in this image we would want the region in black to repersent more of the left image and the region in blue to repersent more of the right image. Because of this we can change the weight of each image as we move across the border region, again in pseudocode:
+
+``` sh
+while writing second image pixel: 
+    if (pixels are already present)
+        w = (current_width / total_width)
+        newpixel = (w * curpixel) + ((1-w) * oldpixel)
+```
+
+This would give us the result: 
+
+![Changing weight blur](imgs/boardblur.png)
+
+As we can see this result is a lot better and the transition feels smooth.
+
 
 ### 5.2 - Augmented Reality
 
