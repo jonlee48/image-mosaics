@@ -14,18 +14,18 @@ mathjax: true
 ## Overview
 Image mosaics are created by compositing multiple images together by computing the perspective transformation between images. 
 We captured our own photographs and implemented a GUI so that users could select features to map between images. 
-We also implemented three bells and whistles. 
-The code is available at [github.com/jonlee48/image-mosaics](https://github.com/jonlee48/image-mosaics)
+We also implemented **three bells and whistles** - *(1) implemented perspective warping using our own math, (2) smooth blending between images, (3) and a video augmented reality application.*
+The code is available [here](https://github.com/jonlee48/image-mosaics).
 
 ### Sections
 1. [Shoot and choose good pictures](#1---shoot-and-choose-good-pictures)
 2. [Recover homographies](#2---recover-homographies)
-   1. [Bell and whistle - implemented perspective warping using our own math](#21---bell-and-whistle---implemented-perspective-warping-using-our-own-math)
+   1. [Bell and whistle - Implemented perspective warping using our own math](#21---bell-and-whistle---implemented-perspective-warping-using-our-own-math)
 3. [Warp the images](#3---warp-the-images)
 4. [Blend images into a mosaic](#4---blend-images-into-a-mosaic)
+   1. [Bell and whistle - Image blending](#41---bell-and-whistle---image-blending)
 5. [Additional bells and whistles](#5---additional-bells-and-whistles)
-   1. [Image blending](#52---image-blending)
-   2. [Augmented reality](#53---augmented-reality)
+   1. [Augmented reality](#51---augmented-reality)
 
 ## 1 - Shoot and choose good pictures
 We selected a photo of a car on the highway and a stock image of a license plate. We could do some interesting things, 
@@ -58,7 +58,7 @@ To avoid this issue of scaling, we simply resize the image to a manageable size 
 The downside to this approach is we end up with a lower resolution result, but it makes the transformation calculation faster.
 
 
-### 2.1 - Bell and Whistle - implemented perspective warping using our own math
+### 2.1 - Bell and whistle - Implemented perspective warping using our own math
 We chose to compute the homography ourselves for this project rather than use any Python libraries. The general idea is to solve the following equation:
 
 $$
@@ -157,9 +157,8 @@ The warped image simply overwrites the pixel values from the other image.
 {% include image names="imgs/bk-and-manhattan-bridge-123.png" caption="NYC" height="300" %}
 {% include image names="imgs/bk-bridge-123.png" caption="Brooklyn Bridge" height="300" %}
 
-## 5 - Additional bells and whistles
 
-### 5.1 - Image blending
+### 4.1 - Bell and whistle - Image blending
 
 In order to demonstrate the blending process the best we wanted to have images that had similar features but differnet levels of contrast. 
 
@@ -218,14 +217,14 @@ This would give us the result:
 
 As we can see this result is a lot better and the transition feels smooth.
 
-
-### 5.2 - Augmented Reality
+## 5 - Additional bells and whistles
+### 5.1 - Augmented Reality
 
 The goal for this feature was to simulate the idea of having a painting on a wall. 
 
 {% include image names="videos/original-vid.gif" height="350" %}
 
-We started with the video above, a video of a wall. On the wall was a sheet of paper that had a checkerboard printed on it. Using an OpenCV function, we were able to automatically find the 4 corners of the checkerboard so that they could be used in computing the homography between an individual frame of the video and an image of a paitning. We used Van Gogh's iconic Starry Night as the painting.
+We started with the video above, a video of a wall. On the wall was a sheet of paper that had a checkerboard printed on it. Using an OpenCV function, `cv2.findChessboardCorners`, we were able to automatically find the 4 corners of the checkerboard so that they could be used in computing the homography between an individual frame of the video and an image of a paitning. We used Van Gogh's iconic Starry Night as the painting.
 
 A high-level psuedocode algorithm for this feature is as follows:
 ```
